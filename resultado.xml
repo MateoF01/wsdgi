@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<SOAP-ENV:Body>
+		<WS_CVA.CVA_BEResponse xmlns="CVA_FE">
+			<Retorno>
+				<Flag>OK</Flag>
+				<RUT>211208980014</RUT>
+				<RespuestaOK>
+					<Numero>370847824</Numero>
+					<Denominacion>YAK S A</Denominacion>
+					<DomicilioFiscal>PADRÓN 175 S.JUDICIAL 3 ERA PARAJE ARROYO NEGRO - ARROYO NEGRO</DomicilioFiscal>
+					<TipoContribuyente>CEDE</TipoContribuyente>
+					<Estado>Certificado de Vigencia Anual Habilitado.</Estado>
+					<Emision>2022-12-28</Emision>
+					<Vencimiento>2023-11-30</Vencimiento>
+				</RespuestaOK>
+			</Retorno>
+		</WS_CVA.CVA_BEResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
