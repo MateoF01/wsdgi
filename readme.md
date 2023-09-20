@@ -1,6 +1,6 @@
 ## Modulos necesarios
 
-*npm i soap*
+npm i soap
 
 ## Como obtener la clave y el certificado del pfx
 (lo que me costó esto)
