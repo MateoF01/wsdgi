@@ -1,3 +1,7 @@
+## correr
+
+node index.js
+
 ## Modulos necesarios
 
 npm i soap
@@ -13,14 +17,14 @@ La contraseña del archivo pfx, para desencriptarlo es Yak2023. Cada vez que se 
 
 ### Clave.key
 
-*openssl pkcs12 -in YAK_SA.pfx -legacy -nocerts -out clave.key*
+openssl pkcs12 -in YAK_SA.pfx -legacy -nocerts -out clave.key
 
 Cuando haces esto te pide que asigenes una nueva PEM pass phrase, que sería una nueva contraseña para usar despues. Y asigne "nuevacontra"
 (nueva contraseña = nuevacontra)
 
 ### Certificado.pem
 
-*openssl pkcs12 -in YAK_SA.pfx -legacy -clcerts -nokeys -out certificado.pem*
+openssl pkcs12 -in YAK_SA.pfx -legacy -clcerts -nokeys -out certificado.pem
 
 ## Funcion SOAP
 Cuando realizamos la funcion execute actualmente devuelve un error (que no logro resolver), pero en el body del error se obtiene correctamente la respuesta esperada. En principio funciona, aunque es raro.
