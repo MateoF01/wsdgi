@@ -25,20 +25,22 @@ const guardarResultado = (resultado) =>{
 
 const getInfoByRUT = async (ruc) => {
 
-    const url = 'https://serviciosdp.dgi.gub.uy:6491/CVA_WS/servlet/acva_ws?wsdl'
+    const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
 
     const cliente = await crearCliente(url, {})
 
     var privateKey = fs.readFileSync("clave.key");
     var publicKey = fs.readFileSync("certificado.pem");
-    var password = 'nuevacontra'; // optional password
+    var password = 'nuevacontra'; 
 
     var wsSecurity = new soap.WSSecurityCert(privateKey, publicKey, password);
     cliente.setSecurity(wsSecurity);
 
-    cliente.CVA_WS.CVA_WSSoapPort.Execute({Ruc: ruc}, (err, result) => {
+    console.log(cliente)
+
+    cliente.RUTPersonaGetEntidad.RUTPersonaGetEntidadSoapPort.Execute({Ruc: ruc}, (err, result) => {
       if (err) {
-        console.error('Error al llamar a la operación del servicio SOAP, pero resultado obtenido');
+        console.error('Error al llamar a la operación del servicio SOAP', err);
       
         guardarResultado(err.body)
         return 
