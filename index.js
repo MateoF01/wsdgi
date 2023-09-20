@@ -38,7 +38,7 @@ const getInfoByRUT = async (ruc) => {
 
     console.log(cliente)
 
-    cliente.RUTPersonaGetEntidad.RUTPersonaGetEntidadSoapPort.Execute({Ruc: ruc}, (err, result) => {
+    cliente.Execute({Ruc: ruc}, (err, result) => {
       if (err) {
         console.error('Error al llamar a la operación del servicio SOAP', err);
       
