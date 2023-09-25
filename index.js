@@ -31,14 +31,12 @@ const getInfoByRUT = async (ruc) => {
 
     var privateKey = fs.readFileSync("clave.key");
     var publicKey = fs.readFileSync("certificado.pem");
-    var password = 'nuevacontra'; 
+    var password = 'hola123'; 
 
     var wsSecurity = new soap.WSSecurityCert(privateKey, publicKey, password);
     cliente.setSecurity(wsSecurity);
 
-    console.log(cliente)
-
-    cliente.Execute({Ruc: ruc}, (err, result) => {
+    cliente.ExecuteAsync({Ruc: ruc}, (err, result) => {
       if (err) {
         console.error('Error al llamar a la operación del servicio SOAP', err);
       
