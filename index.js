@@ -33,7 +33,20 @@ const getInfoByRUT = async (ruc) => {
     var publicKey = fs.readFileSync("certificado.pem");
     var password = 'hola123'; 
 
-    var wsSecurity = new soap.WSSecurityCert(privateKey, publicKey, password);
+    var options = {
+      hasTimeStamp: false,
+      signatureAlgorithm: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+      digestAlgorithm: 'http://www.w3.org/2001/04/xmlenc#sha256',
+      canonicalizationAlgorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#',
+      signerOptions: {
+        prefix: 'ds',
+        attrs: { Id: 'SIG-C7F2874F2B188481A9169565362166845' },
+        existingPrefixes: {
+            wsse: 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+        }
+    }}
+
+    var wsSecurity = new soap.WSSecurityCert(privateKey, publicKey, password,options);
     cliente.setSecurity(wsSecurity);
 
     cliente.ExecuteAsync({Ruc: ruc}, (err, result) => {
@@ -47,7 +60,6 @@ const getInfoByRUT = async (ruc) => {
       console.log('Respuesta del servicio SOAP:', result);
       guardarResultado(result)
     });
-      
 } 
 
-getInfoByRUT(211208980014)
+getInfoByRUT(216639270017)
