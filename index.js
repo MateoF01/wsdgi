@@ -26,14 +26,16 @@ const guardarResultado = (resultado) =>{
 const getInfoByRUT = async (ruc) => {
 
     const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
-
+    
+    const xsd = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad.xsd1.xsd' 
+    
     const cliente = await crearCliente(url, {})
 
     var privateKey = fs.readFileSync("clave.key");
     var publicKey = fs.readFileSync("certificado.pem");
     var password = 'hola123'; 
 
-    var options = {
+    var securityOptions = {
       hasTimeStamp: false,
       signatureAlgorithm: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
       digestAlgorithm: 'http://www.w3.org/2001/04/xmlenc#sha256',
@@ -46,10 +48,12 @@ const getInfoByRUT = async (ruc) => {
         }
     }}
 
-    var wsSecurity = new soap.WSSecurityCert(privateKey, publicKey, password,options);
+
+
+    var wsSecurity = new soap.WSSecurityCert(privateKey, publicKey, password, securityOptions);
     cliente.setSecurity(wsSecurity);
 
-    cliente.ExecuteAsync({Ruc: ruc}, (err, result) => {
+    cliente.ExecuteAsync({Ruc:ruc}, (err, result) => {
       if (err) {
         console.error('Error al llamar a la operación del servicio SOAP', err);
       
