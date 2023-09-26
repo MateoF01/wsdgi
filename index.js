@@ -15,9 +15,9 @@ const guardarResultado = (resultado) =>{
   
   fs.writeFile("resultado.xml", resultado, (err) => {
     if (err) {
-      console.error('Error al escribir el archivo XML:', err);
+      //console.error('Error al escribir el archivo XML:', err);
     } else {
-      console.log('Archivo XML escrito exitosamente.');
+      //console.log('Archivo XML escrito exitosamente.');
     }
   });
 }
@@ -26,7 +26,8 @@ const guardarResultado = (resultado) =>{
 const getInfoByRUT = async (ruc) => {
 
     const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
-    
+    //const url = 'arutpersonagetentidad.xml'
+
     const xsd = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad.xsd1.xsd' 
     
     const cliente = await crearCliente(url, {})
@@ -56,7 +57,6 @@ const getInfoByRUT = async (ruc) => {
     cliente.ExecuteAsync({Ruc:ruc}, (err, result) => {
       if (err) {
         console.error('Error al llamar a la operación del servicio SOAP', err);
-      
         guardarResultado(err.body)
         return 
 
