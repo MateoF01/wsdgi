@@ -29,11 +29,11 @@ const guardarResultado = (resultado) =>{
 
 const getInfoByRUT = async (ruc) => {
 
-    //const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
-    const url = 'arutpersonagetentidad.xml'
+    const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
+    //const url = 'arutpersonagetentidad.xml'
 
-    //const xsd = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad.xsd1.xsd' 
-    const xsd = 'arutpersonagetentidad.xsd1.xsd'
+    const xsd = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad.xsd1.xsd' 
+    //const xsd = 'arutpersonagetentidad.xsd1.xsd'
 
     const cliente = await crearCliente(url, {})
 
