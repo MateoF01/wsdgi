@@ -1,10 +1,14 @@
-const fs = require('fs');
-const soap = require('soap');
+//const fs = require('fs');
+//const soap = require('soap');
+import dotenv from 'dotenv';
+import { writeFile, readFileSync } from 'fs';
+import { createClient, WSSecurityCert } from 'soap';
 
+//dotenv.config();
 
 const crearCliente = (url, options) => {
   return new Promise((resolve, reject) => {
-    soap.createClient(url, options, (err, client) => {
+    createClient(url, options, (err, client) => {
       if (err) reject(err)
       resolve(client)
     })
@@ -13,7 +17,7 @@ const crearCliente = (url, options) => {
 
 const guardarResultado = (resultado) =>{
   
-  fs.writeFile("resultado.xml", resultado, (err) => {
+  writeFile("resultado.xml", resultado, (err) => {
     if (err) {
       //console.error('Error al escribir el archivo XML:', err);
     } else {
@@ -25,15 +29,16 @@ const guardarResultado = (resultado) =>{
 
 const getInfoByRUT = async (ruc) => {
 
-    const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
-    //const url = 'arutpersonagetentidad.xml'
+    //const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
+    const url = 'arutpersonagetentidad.xml'
 
-    const xsd = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad.xsd1.xsd' 
-    
+    //const xsd = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad.xsd1.xsd' 
+    const xsd = 'arutpersonagetentidad.xsd1.xsd'
+
     const cliente = await crearCliente(url, {})
 
-    var privateKey = fs.readFileSync("clave.key");
-    var publicKey = fs.readFileSync("certificado.pem");
+    var privateKey = readFileSync("clave.key");
+    var publicKey = readFileSync("certificado.pem");
     var password = 'hola123'; 
 
     var securityOptions = {
@@ -51,7 +56,7 @@ const getInfoByRUT = async (ruc) => {
 
 
 
-    var wsSecurity = new soap.WSSecurityCert(privateKey, publicKey, password, securityOptions);
+    var wsSecurity = new WSSecurityCert(privateKey, publicKey, password, securityOptions);
     cliente.setSecurity(wsSecurity);
 
     cliente.ExecuteAsync({Ruc:ruc}, (err, result) => {

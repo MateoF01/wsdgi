@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,5 +12,8 @@
   "dependencies": {
     "fs": "^0.0.1-security",
     "soap": "^1.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1"
   }
 }
