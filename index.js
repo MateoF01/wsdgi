@@ -1,74 +1,76 @@
-//const fs = require('fs');
-//const soap = require('soap');
-import dotenv from 'dotenv';
-import { writeFile, readFileSync } from 'fs';
-import { createClient, WSSecurityCert } from 'soap';
+import forge from 'node-forge'
+import { readFileSync } from 'fs'
+import { Client, createClient, WSSecurityCert } from 'soap'
 
-//dotenv.config();
-
-const crearCliente = (url, options) => {
-  return new Promise((resolve, reject) => {
+/**
+ * @param {string} url
+ * @param {any} options
+ * @returns {Promise<Client>}
+ */
+const crearCliente = async (url, options) => {
+  const cliente = await new Promise((resolve, reject) => {
     createClient(url, options, (err, client) => {
       if (err) reject(err)
-      resolve(client)
+      else resolve(client)
     })
   })
+
+  const _xmlToObject = cliente.wsdl.xmlToObject.bind(cliente.wsdl)
+
+  cliente.wsdl.xmlToObject = function (body) {
+    body = body
+      .replace(/WS_/g, '')
+      .replace(/[\n|\t]/g, '')
+      .replace(/&lt;/g, '<')
+
+    const innerBody = /<Data>(.+?)<\/Data>/.exec(body)
+
+    body = body
+      .replace(/<Data>.+?<\/Data>/, '<Data></Data>')
+      .replace(/<Mensajes>.+?<\/Mensajes>/, '<Mensajes></Mensajes>')
+
+    cliente.emit('inner', innerBody?.[1], _xmlToObject)
+
+    return _xmlToObject(body)
+  }
+
+  return cliente
 }
 
-const guardarResultado = (resultado) =>{
-  
-  writeFile("resultado.xml", resultado, (err) => {
-    if (err) {
-      //console.error('Error al escribir el archivo XML:', err);
-    } else {
-      //console.log('Archivo XML escrito exitosamente.');
-    }
-  });
+const retornaCertificado = (pfxPath, password) => {
+  const pfxFile = readFileSync(pfxPath)
+
+  const p12Der = forge.util.decode64(pfxFile.toString('base64'))
+  const p12Asn1 = forge.asn1.fromDer(p12Der)
+  const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password)
+
+  const keyObj = p12.getBags({ bagType: forge.pki.oids.pkcs8ShroudedKeyBag })[forge.pki.oids.pkcs8ShroudedKeyBag][0]
+  const privateKey = forge.pki.privateKeyToPem(keyObj.key)
+
+  const certObj = p12.getBags({ bagType: forge.pki.oids.certBag })[forge.pki.oids.certBag][0]
+  const certificate = forge.pki.certificateToPem(certObj.cert)
+
+  return { privateKey, certificate }
 }
 
+const setClientSecurity = (cliente, certPath, password) => {
+  const { privateKey, certificate } = retornaCertificado(certPath, password)
+  cliente.setSecurity(new WSSecurityCert(privateKey, certificate, password))
+}
 
-const getInfoByRUT = async (ruc) => {
+const getInfoByRUT = async ruc => {
+  const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
+  const cliente = await crearCliente(url, {})
 
-    const url = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad?wsdl'
-    //const url = 'arutpersonagetentidad.xml'
+  setClientSecurity(cliente, './YAK_SA.pfx', 'Yak2023')
 
-    const xsd = 'https://serviciosdp.dgi.gub.uy:6491/RUTWSPGetEntidad/servlet/arutpersonagetentidad.xsd1.xsd' 
-    //const xsd = 'arutpersonagetentidad.xsd1.xsd'
+  let datosCliente = ''
+  cliente.on('inner', (innerBody, xmlToObject) => (datosCliente = xmlToObject(innerBody)))
 
-    const cliente = await crearCliente(url, {})
+  await cliente.ExecuteAsync({ Ruc: ruc })
+  return datosCliente
+}
 
-    var privateKey = readFileSync("clave.key");
-    var publicKey = readFileSync("certificado.pem");
-    var password = 'hola123'; 
+const datos= await getInfoByRUT(216639270017)
 
-    var securityOptions = {
-      hasTimeStamp: false,
-      signatureAlgorithm: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
-      digestAlgorithm: 'http://www.w3.org/2001/04/xmlenc#sha256',
-      canonicalizationAlgorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#',
-      signerOptions: {
-        prefix: 'ds',
-        attrs: { Id: 'SIG-C7F2874F2B188481A9169565362166845' },
-        existingPrefixes: {
-            wsse: 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
-        }
-    }}
-
-
-
-    var wsSecurity = new WSSecurityCert(privateKey, publicKey, password, securityOptions);
-    cliente.setSecurity(wsSecurity);
-
-    cliente.ExecuteAsync({Ruc:ruc}, (err, result) => {
-      if (err) {
-        console.error('Error al llamar a la operación del servicio SOAP', err);
-        guardarResultado(err.body)
-        return 
-
-      }
-      console.log('Respuesta del servicio SOAP:', result);
-      guardarResultado(result)
-    });
-} 
-
-getInfoByRUT(216639270017)
+console.log(datos)
