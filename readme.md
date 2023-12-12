@@ -26,5 +26,3 @@ Cuando haces esto te pide que asigenes una nueva PEM pass phrase, que sería una
 
 openssl pkcs12 -in YAK_SA.pfx -legacy -clcerts -nokeys -out certificado.pem
 
-## Funcion SOAP
-Cuando realizamos la funcion execute actualmente devuelve un error (que no logro resolver), pero en el body del error se obtiene correctamente la respuesta esperada. En principio funciona, aunque es raro.
